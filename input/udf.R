@@ -1,5 +1,6 @@
 library(dplyr)
 library(tidyr)
+library(stringr)
 
 #' Obtiene un dataset de famecon y lo prepara para ser mezclado junto con otros
 #' famecons de otros años
@@ -48,19 +49,23 @@ famecon_cleaner <- function(famecon_df, variables) {
   # Subconjunto de famecon con las variables para la estimación
   famecon_sub <- famecon_df %>%
     select(
-      variables
+      contains("fid"),
+      all_of(variables)
     )
  
   # La variable fid* debe estar sin el sufijo del año
   # Obtén fid del año presente
   all_fids <- famecon_sub %>%
     select(contains("fid")) %>%
-    colnames() %>% 
+    colnames() %>%
+    str_subset("^fid\\d+$") %>%
     sort(decreasing=TRUE)
   
   relevant_fid <- all_fids[1]
   
-  famecon_sub <- famecon_sub %>% rename(fid = relevant_fid)
+  famecon_sub <- famecon_sub %>%
+    rename(fid = relevant_fid) %>%
+    select(fid, variables)
   
   # La variable fid no debería ser un integer, sino un character
   famecon_sub$fid <- as.character(famecon_sub$fid)
@@ -68,4 +73,19 @@ famecon_cleaner <- function(famecon_df, variables) {
   return (famecon_sub)
   
 }
+
+ famecon_cleaner(
+   famecon2016,
+   c(
+     "fincome1",
+     "fincome1_per",
+     "pce",
+     "food",
+     "dress",
+     "house",
+     "daily",
+     "med",
+     "trco"
+   )
+ )
 

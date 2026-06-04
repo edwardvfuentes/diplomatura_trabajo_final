@@ -1,4 +1,4 @@
 library(tidyverse)
 
-source("./input/load_souce_data.R")
+source("./input/load_source_data.R")
 
