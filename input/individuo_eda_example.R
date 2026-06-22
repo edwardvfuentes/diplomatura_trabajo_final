@@ -3,7 +3,6 @@ library(tidyverse)
 source("./input/load_souce_data.R")
 
 
-
 famconf2020 %>% filter(fid20 == 100051) %>% select(contains('fid'), co_a20_p)
 
 # Un pid a boleo:  100051501

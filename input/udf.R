@@ -45,7 +45,25 @@ library(stringr)
 #' )
 
 famecon_cleaner <- function(famecon_df, variables) {
+
+  # Si hay una var llamada faminc_net, renombrarla a fincome1
+  if(any(str_detect(names(famecon_df), "faminc_net"))){
+
+    names(famecon_df) <- str_replace(names(famecon_df), "faminc_net", "fincome1")
+    
+  }
   
+  # Si no hay fincome1_per, la calcularemos
+  if(!any(str_detect(names(famecon_df), "fincome1_per"))){
+    
+    famecon_df <- famecon_df %>%
+      mutate(
+        fincome1_per = fincome1 / familysize
+      )
+    
+  }
+  
+  # == Generamos el Subconjunto ==
   # Subconjunto de famecon con las variables para la estimación
   famecon_sub <- famecon_df %>%
     select(
@@ -58,7 +76,7 @@ famecon_cleaner <- function(famecon_df, variables) {
   all_fids <- famecon_sub %>%
     select(contains("fid")) %>%
     colnames() %>%
-    str_subset("^fid\\d+$") %>%
+    str_subset("^fid\\d*$") %>%
     sort(decreasing=TRUE)
   
   relevant_fid <- all_fids[1]
@@ -74,8 +92,9 @@ famecon_cleaner <- function(famecon_df, variables) {
   
 }
 
+# Ejecución de prueba
  famecon_cleaner(
-   famecon2016,
+   famecon2010,
    c(
      "fincome1",
      "fincome1_per",
