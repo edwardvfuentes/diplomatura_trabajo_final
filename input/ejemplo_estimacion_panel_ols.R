@@ -31,4 +31,4 @@ summary(fixef(grun.fe, type = "dmean"))
 
 pdata.frame(famecon_complete, index = c("year", "provcd"), drop.index=TRUE, row.names=TRUE)
 
-plm(fincome1_per ~ food + pic + house, data = famecon_complete, model = "within")
+plm(fincome1_per ~ food + pce + house, data = famecon_complete, model = "within")

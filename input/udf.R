@@ -116,3 +116,16 @@ famecon_cleaner <- function(famecon_df, variables) {
    )
  )
 
+ #' Filtra un numeric para quitarle sus outliers mediante cuantiles
+ #' 
+ #' @param x Un vector numérico
+ #' @returns El vector numérico sin los outliers en cuestión
+ #' 
+ es_outlier <- function(x) {
+   q1 <- quantile(x, 0.25, na.rm = TRUE)
+   q3 <- quantile(x, 0.75, na.rm = TRUE)
+   iqr <- q3 - q1
+   limite_inferior <- q1 - 1.5 * iqr
+   limite_superior <- q3 + 1.5 * iqr
+   return(x < limite_inferior | x > limite_superior)
+ }

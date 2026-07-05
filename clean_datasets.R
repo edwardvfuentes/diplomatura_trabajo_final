@@ -53,7 +53,28 @@ famecon_family_df <- famecon_map %>%
 # iguales a 99)
 famecon_family_df <- famecon_family_df %>% filter(provcd >= 0)
 
-# Insertar medians en el resto de variables numéricas donde hay un NA
-famecon_family_df <- famecon_family_df %>% mutate(
+# Insertar medians en el resto de variables numéricas donde hay un NA.
+# Estas medianas son por año y provincia para mayor representatividad.
+famecon_family_df <- famecon_family_df %>%
+  group_by(provcd, year) %>%
+  mutate(
     across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE)))
-  ) %>% summary()
+  ) %>%
+  ungroup()
+
+# Se eliminan las 6 familias de Xinjiang en 2014 que no tienen datos de varias
+# variables
+famecon_family_df <- famecon_family_df %>% filter(!is.na(fincome1))
+
+# Eliminamos de las variables numéricas los outliers
+famecon_family_df <- famecon_family_df %>%
+  filter(!es_outlier(fincome1))
+
+# Elaboraremos otra versión del dataframe con promedios para todas las variables
+# según año y provincia
+famecon_grouped_df <- famecon_family_df %>%
+  group_by(year, provcd) %>% 
+  summarise(
+    across(where(is.numeric), \(x) mean(x, na.rm = TRUE))
+  )
+  
