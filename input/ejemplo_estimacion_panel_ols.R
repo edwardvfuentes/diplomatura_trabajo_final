@@ -19,9 +19,16 @@ emp ~ wage + capital | . -wage + lag(wage, 1)
 
 
 # Ejemplo de estimación de panel de efectos fijos
-grun.fe <- plm(inv~value+capital, data = grunf_p, model = "within")
+grun.fe <- plm(inv~value+capital, data = Grunfeld, model = "within")
 
 
 # Si quieres extraer los efectos fijos:
 fixef(grun.fe, type = "dmean")
 summary(fixef(grun.fe, type = "dmean"))
+
+
+
+
+pdata.frame(famecon_complete, index = c("year", "provcd"), drop.index=TRUE, row.names=TRUE)
+
+plm(fincome1_per ~ food + pic + house, data = famecon_complete, model = "within")

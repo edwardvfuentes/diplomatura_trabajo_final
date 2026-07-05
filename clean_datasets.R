@@ -33,8 +33,21 @@ famecon_map <- map_dfr(
   .id = "df_year"
 )
 
-## Limpieza adicional después del merge
+# Resumen de datos después del merge
+summary(famecon_map)
+nrow(famecon_map) # 95185 filas en bruto
 
-# Extraemos el año como una variable
-famecon_complete <- famecon_map %>%
+## == Limpieza adicional después del merge ==
+
+# Extraemos el año como una variable ==
+famecon_family_df <- famecon_map %>%
     mutate(year = str_extract(df_year, "\\d{4}"))
+
+# Eliminar missing values de las provincias (esto es, códigos negativos o
+# iguales a 99)
+famecon_family_df <- famecon_family_df %>% filter(provcd >= 0)
+
+# Insertar medians en el resto de variables numéricas donde hay un NA
+famecon_family_df <- famecon_family_df %>% mutate(
+    across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE)))
+  ) %>% summary()
