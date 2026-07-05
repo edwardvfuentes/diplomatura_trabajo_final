@@ -36,5 +36,5 @@ famecon_map <- map_dfr(
 ## Limpieza adicional después del merge
 
 # Extraemos el año como una variable
-famecon_map <- famecon_map %>%
+famecon_complete <- famecon_map %>%
     mutate(year = str_extract(df_year, "\\d{4}"))
