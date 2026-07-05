@@ -68,9 +68,15 @@ famecon_cleaner <- function(famecon_df, variables) {
   famecon_sub <- famecon_df %>%
     select(
       contains("fid"),
+      contains("provcd"),
       all_of(variables)
     )
  
+  # La variable de provincias, provcd, no debería tener sufijo
+  # numérico.
+  famecon_sub <- famecon_sub %>% 
+    rename_with( ~str_remove(., "\\d+$"), .cols = matches("^provcd\\d+$"))
+  
   # La variable fid* debe estar sin el sufijo del año
   # Obtén fid del año presente
   all_fids <- famecon_sub %>%
@@ -82,11 +88,13 @@ famecon_cleaner <- function(famecon_df, variables) {
   relevant_fid <- all_fids[1]
   
   famecon_sub <- famecon_sub %>%
-    rename(fid = relevant_fid) %>%
-    select(fid, variables)
+    rename(fid = relevant_fid)
   
   # La variable fid no debería ser un integer, sino un character
   famecon_sub$fid <- as.character(famecon_sub$fid)
+  
+  # Devolvemos el dataset final
+  famecon_sub <- famecon_sub %>% select(fid, provcd, variables)
   
   return (famecon_sub)
   
@@ -94,7 +102,7 @@ famecon_cleaner <- function(famecon_df, variables) {
 
 # Ejecución de prueba
  famecon_cleaner(
-   famecon2010,
+   famecon2020,
    c(
      "fincome1",
      "fincome1_per",

@@ -11,42 +11,30 @@ i <- 1
 for (famecon_df in str_subset(ls(), "famecon\\d{4}")) {
   print(famecon_df)
   # famecon_list <- append(famecon_list, get(famecon_df))
-  famecon_list[[i]] <- get(famecon_df)
+  # famecon_list[[i]] <- get(famecon_df)
+  famecon_list[[famecon_df]] <- get(famecon_df)
   i <- i + 1
 }
 
-
-# for (famecon_df in str_subset(ls(), "famecon")){
-#   print("Empezamos a limpiar el dataset " + famecon_df + "...")
-#   famecon_cleaner(
-#     get(famecon_df),
-#        c(
-#          "fincome1",
-#          "fincome1_per",
-#          "pce",
-#          "food",
-#          "dress",
-#          "house",
-#          "daily",
-#          "med",
-#          "trco"
-#        )
-#   )
-# }
-
-
-map(
+famecon_map <- map_dfr(
   famecon_list,
   function(x) famecon_cleaner(x, variables = c(
-              "fincome1",
-              "fincome1_per",
-              "pce",
-              "food",
-              "dress",
-              "house",
-              "daily",
-              "med",
-              "trco"
-            )
-        )
+    "fincome1",
+    "fincome1_per",
+    "pce",
+    "food",
+    "dress",
+    "house",
+    "daily",
+    "med",
+    "trco"
+  )
+  ),
+  .id = "df_year"
 )
+
+## Limpieza adicional después del merge
+
+# Extraemos el año como una variable
+famecon_map <- famecon_map %>%
+    mutate(year = str_extract(df_year, "\\d{4}"))
