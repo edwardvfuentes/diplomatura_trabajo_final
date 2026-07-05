@@ -32,6 +32,7 @@ famecon_map <- map_dfr(
     "other",
     "eptran",
     "epwelf",
+    "mortgage",
     "expense"
   )
   ),
