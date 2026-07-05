@@ -27,7 +27,12 @@ famecon_map <- map_dfr(
     "house",
     "daily",
     "med",
-    "trco"
+    "trco",
+    "eec",
+    "other",
+    "eptran",
+    "epwelf",
+    "expense"
   )
   ),
   .id = "df_year"
