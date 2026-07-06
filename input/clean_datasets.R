@@ -1,7 +1,7 @@
 library(tidyverse)
 library(stringr)
 
-source("./input/load_source_data.R")
+source("./input/household_type.R")
 source("./input/udf.R")
 
 famecon_list <- list()
@@ -9,9 +9,6 @@ i <- 1
 
 # Una lista con los dataframes relevantes
 for (famecon_df in str_subset(ls(), "famecon\\d{4}")) {
-  print(famecon_df)
-  # famecon_list <- append(famecon_list, get(famecon_df))
-  # famecon_list[[i]] <- get(famecon_df)
   famecon_list[[famecon_df]] <- get(famecon_df)
   i <- i + 1
 }
@@ -49,13 +46,14 @@ nrow(famecon_map) # 95185 filas en bruto
 famecon_family_df <- famecon_map %>%
     mutate(year = str_extract(df_year, "\\d{4}"))
 
+# Eliminamos las siguientes provincias por falta de datos o muy pocos datos:
+# Hainan, Tibet, Qinghai, Ningxia, Mongolia Interior y Xinjiang
+famecon_family_df <- famecon_family_df %>% filter(provcd %notin% c(46, 54, 63, 64, 65)) 
+
 # Eliminar missing values de las provincias (esto es, códigos negativos o
 # iguales a 99, y los NAs que se encuentran en algunos datos)
-famecon_family_df_2 <- famecon_family_df %>% filter(provcd >= 0)
-nrow(famecon_family_df_2) # 92638: Son 2547 filas menos
-
-famecon_family_df %>% 
-  anti_join(famecon_family_df_2)
+famecon_family_df <- famecon_family_df %>% filter(provcd >= 0)
+nrow(famecon_family_df) # 92638: Son 2547 filas menos
 
 # Insertar medians en el resto de variables numéricas donde hay un NA.
 # Estas medianas son por año y provincia para mayor representatividad.
@@ -65,10 +63,6 @@ famecon_family_df <- famecon_family_df %>%
     across(where(is.numeric), ~ replace_na(., median(., na.rm = TRUE)))
   ) %>%
   ungroup()
-
-# Se eliminan las 6 familias de Xinjiang en 2014 que no tienen datos de varias
-# variables
-famecon_family_df <- famecon_family_df %>% filter(!is.na(fincome1))
 
 # Eliminamos de las variables numéricas los outliers
 famecon_family_df <- famecon_family_df %>%

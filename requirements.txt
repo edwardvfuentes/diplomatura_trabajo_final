@@ -1,0 +1,5 @@
+tidyverse
+e1071
+modelsummary
+webshot2
+haven
