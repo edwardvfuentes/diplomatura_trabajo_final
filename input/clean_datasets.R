@@ -50,8 +50,12 @@ famecon_family_df <- famecon_map %>%
     mutate(year = str_extract(df_year, "\\d{4}"))
 
 # Eliminar missing values de las provincias (esto es, códigos negativos o
-# iguales a 99)
-famecon_family_df <- famecon_family_df %>% filter(provcd >= 0)
+# iguales a 99, y los NAs que se encuentran en algunos datos)
+famecon_family_df_2 <- famecon_family_df %>% filter(provcd >= 0)
+nrow(famecon_family_df_2) # 92638: Son 2547 filas menos
+
+famecon_family_df %>% 
+  anti_join(famecon_family_df_2)
 
 # Insertar medians en el resto de variables numéricas donde hay un NA.
 # Estas medianas son por año y provincia para mayor representatividad.
