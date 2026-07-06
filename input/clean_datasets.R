@@ -30,7 +30,8 @@ famecon_map <- map_dfr(
     "eptran",
     "epwelf",
     "mortage",
-    "expense"
+    "expense",
+    "tipo_familia"
   )
   ),
   .id = "df_year"
@@ -68,6 +69,13 @@ famecon_family_df <- famecon_family_df %>%
 famecon_family_df <- famecon_family_df %>%
   filter(!es_outlier(fincome1))
 
+# Añadimos una variable dummy, para reflejar la reforma del hukou en 2014
+famecon_family_df <- famecon_family_df %>% 
+  mutate(
+    hukou_reform = as.logical(ifelse(as.numeric(year) >= 2014, 1, 0))
+    )
+
+
 # Elaboraremos otra versión del dataframe con promedios para todas las variables
 # según año y provincia
 famecon_grouped_df <- famecon_family_df %>%
@@ -75,4 +83,5 @@ famecon_grouped_df <- famecon_family_df %>%
   summarise(
     across(where(is.numeric), \(x) mean(x, na.rm = TRUE))
   )
+
   

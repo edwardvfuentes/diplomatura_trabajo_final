@@ -1,6 +1,7 @@
 library(tidyverse)
 
 source("./input/load_source_data.R")
+source("./input/udf.R")
 
 
 ## Por simplicidad, residential hukou será igual a urban

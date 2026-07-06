@@ -193,7 +193,7 @@ famecon_cleaner <- function(famecon_df, variables) {
    household_family <- household_person %>%
      group_by(!!sym(relevant_fid)) %>% 
      summarise(
-       tipo_household = names(sort(table(tipo_individuo), decreasing = TRUE))[1]
+       tipo_familia = names(sort(table(tipo_individuo), decreasing = TRUE))[1]
      )
    
    ## El resultado se tiene que aplicar al dataframe final de famecon
@@ -210,14 +210,6 @@ famecon_cleaner <- function(famecon_df, variables) {
  #   variable_urban = "urban",
  #   variable_hukou = "tb601_a_p"
  # )
-
- famecon2012 <- clasificar_familia(
-   famecon2012_raw,
-   famconf2012_raw,
-   variable_urban = "urban12",
-   variable_hukou = "qa301_a12_p"
- )
- 
  
  # clasificar_familia(
  #   famecon2014_raw,
