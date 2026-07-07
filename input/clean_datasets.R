@@ -17,7 +17,7 @@ famecon_map <- map_dfr(
   famecon_list,
   function(x) famecon_cleaner(x, variables = c(
     "fincome1_per",
-    "pce_per",
+    "pce",
     "food",
     "dress",
     "house",
@@ -26,8 +26,6 @@ famecon_map <- map_dfr(
     "trco",
     "eec",
     "other",
-    "eptran",
-    "expense",
     "tipo_familia"
   )
   ),
@@ -83,6 +81,6 @@ famecon_grouped_df <- famecon_family_df %>%
   group_by(year, provcd) %>% 
   summarise(
     across(where(is.numeric), \(x) mean(x, na.rm = TRUE))
-  )
+  ) %>% ungroup()
 
   

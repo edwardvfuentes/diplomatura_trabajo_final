@@ -96,14 +96,24 @@ famecon_cleaner <- function(famecon_df, variables) {
   }
   
   # pce se ha de calcular en términos per capita también
-  if(!any(str_detect(names(famecon_df), "pce_per"))){
-
-    famecon_df <- famecon_df %>%
-      mutate(
-        pce_per = pce / !!sym(relevant_familysize)
+  # if(!any(str_detect(names(famecon_df), "pce_per"))){
+  # 
+  #   famecon_df <- famecon_df %>%
+  #     mutate(
+  #       pce_per = pce / !!sym(relevant_familysize)
+  #     )
+  # 
+  # }
+  
+  # En realidad tenemos que calcular el per capita de todas las variables
+  # numericas
+  famecon_df <- famecon_df %>% 
+    mutate(
+      across(
+        c("pce", "food", "dress", "house", "daily", "med", "trco"),
+        ~ . / !!sym(relevant_familysize)
       )
-
-  }
+    )
   
   
   # == Generamos el Subconjunto ==
@@ -137,10 +147,8 @@ famecon_cleaner <- function(famecon_df, variables) {
  # famecon_cleaner(
  #   famecon2016_raw,
  #   c(
- #     "fincome1",
  #     "fincome1_per",
  #     "pce",
- #     "pce_per",
  #     "food",
  #     "dress",
  #     "house",
@@ -201,10 +209,10 @@ famecon_cleaner <- function(famecon_df, variables) {
        select(pid, relevant_fid, !!sym(variable_urban), !!sym(variable_hukou)) %>% 
        mutate(
          tipo_individuo = case_when(
-           !!sym(variable_urban) == 0 & (!!sym(variable_hukou) == 3 | !!sym(variable_hukou) == 7) ~ "Migrante (Urbano a Rural)",
-           !!sym(variable_urban) == 1 & !!sym(variable_hukou) == 1 ~ "Migrante (Rural a Urbano)",
-           !!sym(variable_urban) == 0 & !!sym(variable_hukou) == 1 ~ "Rural",
-           !!sym(variable_urban) == 1 & (!!sym(variable_hukou) == 3 | !!sym(variable_hukou) == 7) ~ "Urbano",
+           !!sym(variable_urban) == 0 & (!!sym(variable_hukou) == 3 | !!sym(variable_hukou) == 7) ~ "Migrante (Urbano a Rural)", # Vive en Rural, y hukou urbano
+           !!sym(variable_urban) == 1 & !!sym(variable_hukou) == 1 ~ "Migrante (Rural a Urbano)", # Vive en Urbano, y hukou Rural
+           !!sym(variable_urban) == 0 & !!sym(variable_hukou) == 1 ~ "Rural", # Vive en Rural y hukou Rural
+           !!sym(variable_urban) == 1 & (!!sym(variable_hukou) == 3 | !!sym(variable_hukou) == 7) ~ "Urbano", # vive en urbano y hukou urbano
            TRUE                        ~ NA 
          ) %>% as.factor()
        )
@@ -239,11 +247,13 @@ famecon_cleaner <- function(famecon_df, variables) {
  #   variable_hukou = "qa301_a14_p"
  # )
 
- 
- 
- 
- 
- 
+ # clasificar_familia(
+ #   famecon2022_raw,
+ #   famconf2022_raw,
+ #   variable_urban = "urban22",
+ #   variable_hukou = "hukou_a22_p"
+ # ) 
+
  
  
  

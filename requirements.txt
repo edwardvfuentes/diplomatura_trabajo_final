@@ -4,3 +4,6 @@ modelsummary
 webshot2
 haven
 skimr
+ggthemes
+gsci
+envalysis
