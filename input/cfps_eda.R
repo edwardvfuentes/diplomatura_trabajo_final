@@ -9,8 +9,48 @@ library(scales)
 
 source("./input/clean_datasets.R")
 
-# == Tablas estadísticas == 
+# Diccionario para los nombres de las variables
+dict <- c(
+  "daily"= "Necesidades diarias",
+  "dress"= "Ropa",
+  "eec"  = "Educación y entretenimiento",
+  "food" = "Comida",
+  "house"= "Casa",
+  "med"  = "Gastos médicos",
+  "other"= "Otros",
+  "trco" = "Correos y telecomunicaciones"
+)
 
+# Valores únicos tipo_de_familia según fid
+famecon_family_df %>% 
+  group_by(fid) %>% 
+  summarise(valores_unicos = list(unique(tipo_familia)))
+
+
+# Conteos de transición de un tipo_famili a otro entre 2010 y 2012
+famecon_family_df %>%
+  filter(year %in% c(2010, 2012)) %>%
+  mutate(year = as.integer(year)) %>% 
+  select(fid, year, tipo_familia) %>% 
+  arrange(fid, year) %>% 
+  group_by(fid) %>% 
+  mutate(
+    estado_actual = tipo_familia,
+    estado_siguiente = lead(tipo_familia),
+    anio_actual = year,
+    anio_siguiente = lead(year)
+  ) %>% 
+  ungroup() %>% 
+  filter(!is.na(estado_siguiente)) %>% 
+  mutate(periodo = paste0(anio_actual, "/", anio_siguiente)) %>% 
+  count(periodo, estado_actual, estado_siguiente)
+
+
+
+
+
+
+# == Tablas estadísticas == 
 
 ## Tabla 1: Muestras por provincias y por años antes de las transformaciones
 provcd_year_summary <- famecon_family_df %>% 
@@ -150,12 +190,12 @@ familia_cat_gasto_2022 <- famecon_family_df %>%
 
   familia_cat_gasto_2022 %>% 
   ggplot(aes(x = Variable, y=pct_gasto)) +
-  geom_col( aes(fill = tipo_familia), position = "dodge") +
+  geom_col( aes(fill = tipo_familia), position = "dodge", width = 0.5) +
   theme_publish() +
   theme(
     panel.grid.major.y = element_line(
       color = "gray80", 
-      linewidth = 0.5,  
+      linewidth = 0.5,
       linetype = "solid"   
     )
   ) +
@@ -166,6 +206,7 @@ familia_cat_gasto_2022 <- famecon_family_df %>%
   labs(
     y = "% Gasto total en la categoría",
     x = "Categoría de gasto",
+    fill = "Tipo familia",
     caption = expression(italic("Figura 4: Distribución de gastos según tipo de familia (2022). Elaboración propia con datos de CFPS"))
   )
 
@@ -180,8 +221,10 @@ famecon_family_df %>%
     names_to = "Variable",
     values_to = "Valor"
   ) %>% 
+  mutate(Variable=recode(Variable, !!!dict, .default="Otro")) %>% 
   ggplot(aes(x = Variable, y=Valor)) +
   geom_col( aes(fill = tipo_familia), position = "dodge") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
   theme_publish() +
   theme(
     panel.grid.major.y = element_line(
