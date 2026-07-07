@@ -21,6 +21,23 @@ get_relevant_fid <- function(famecon_df) {
   return (relevant_fid)
 }
 
+#' Obtiene el nombre familysize relevante para el famecon. Normalmente es el que se corresponde
+#' con el año en el que está el dataset
+#' 
+#' @param famecon_df Un dataframe de famecon
+#' @returns nombre del familysize correcto
+get_relevant_familysize <- function(famecon_df) {
+  all_fam <- famecon_df %>%
+    select(contains("familysize")) %>%
+    colnames() %>%
+    str_subset("^familysize\\d*$") %>%
+    sort(decreasing=TRUE)
+  
+  relevant_fam <- all_fam[1]
+  
+  return (relevant_fam)
+}
+
 
 #' Obtiene un dataset de famecon y lo prepara para ser mezclado junto con otros
 #' famecons de otros años
@@ -72,15 +89,30 @@ famecon_cleaner <- function(famecon_df, variables) {
     
   }
   
+  # Obtener la variable correcta de family_size
+  relevant_familysize <- get_relevant_familysize(famecon_df)
+  
   # Si no hay fincome1_per, la calcularemos
   if(!any(str_detect(names(famecon_df), "fincome1_per"))){
     
     famecon_df <- famecon_df %>%
       mutate(
-        fincome1_per = fincome1 / familysize
+        fincome1_per = fincome1 / !!sym(relevant_familysize)
       )
     
   }
+  
+  
+  # pce se ha de calcular en términos per capita también
+  if(!any(str_detect(names(famecon_df), "pce_per"))){
+
+    famecon_df <- famecon_df %>%
+      mutate(
+        pce_per = pce / !!sym(relevant_familysize)
+      )
+
+  }
+  
   
   # == Generamos el Subconjunto ==
   # Subconjunto de famecon con las variables para la estimación
@@ -115,11 +147,12 @@ famecon_cleaner <- function(famecon_df, variables) {
 
 # Ejecución de prueba
  # famecon_cleaner(
- #   famecon2020_raw,
+ #   famecon2016_raw,
  #   c(
  #     "fincome1",
  #     "fincome1_per",
  #     "pce",
+ #     "pce_per",
  #     "food",
  #     "dress",
  #     "house",

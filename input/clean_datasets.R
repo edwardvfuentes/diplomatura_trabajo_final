@@ -19,6 +19,7 @@ famecon_map <- map_dfr(
     "fincome1",
     "fincome1_per",
     "pce",
+    "pce_per",
     "food",
     "dress",
     "house",
