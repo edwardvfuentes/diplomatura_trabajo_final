@@ -55,6 +55,10 @@ famecon_family_df <- famecon_family_df %>% filter(provcd %notin% c(46, 54, 63, 6
 # Eliminar missing values de las provincias (esto es, códigos negativos o
 # iguales a 99, y los NAs que se encuentran en algunos datos)
 famecon_family_df <- famecon_family_df %>% filter(provcd >= 0)
+# Y convertimos la variable de provincias a factores
+famecon_family_df <- famecon_family_df %>% mutate(
+  provcd = as_factor(provcd)
+)
 nrow(famecon_family_df) # 92638: Son 2547 filas menos
 
 # Insertar medians en el resto de variables numéricas donde hay un NA.

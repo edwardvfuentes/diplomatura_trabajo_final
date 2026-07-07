@@ -6,9 +6,12 @@ source("./input/clean_datasets.R")
 
 # == Tablas estadísticas == 
 
-## Muestras por provincias y por años
+
+## Muestras por provincias y por años antes de las transformaciones
+
+## Muestras por años después de transformaciones
 year_summary <- famecon_family_df %>% 
-  group_by(year) %>% 
+  group_by(year, provcd) %>% 
   summarise(Registros = n()) %>% 
   rename("Año" = year)
 

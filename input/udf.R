@@ -1,43 +1,34 @@
 library(dplyr)
 library(tidyr)
+library(glue)
 library(stringr)
 library(rlang)
 
 
-#' Obtiene el nombre fid relevante para el famecon. Normalmente es el que se corresponde
-#' con el año en el que está el dataset
+
+#' Obtiene el nombre de una var relevante para el famecon. Normalmente es el que se corresponde
+#' con el año en el que está el dataset. Pensado para variables que tienen nombres diferentes de
+#' una muestra a otra (ej provcd frente a provcd14)
 #' 
 #' @param famecon_df Un dataframe de famecon
-#' @returns nombre del fid correcto
-get_relevant_fid <- function(famecon_df) {
-  all_fids <- famecon_df %>%
-    select(contains("fid")) %>%
+#' @param var_name Nombre de la variable que se desea capturar entre múltiples. Algunos
+#'  ejemplos son provcd, familysize o fid
+#' @returns Nombre de la variable correcta, que corresponde al año del famecon analizado
+get_relevant_name <- function(famecon_df, var_name) {
+  
+  # Se busca un nombre que opcionalmente puede contener dígitos después
+  regex_pattern <- glue("^{var_name}\\d*$")
+  
+  all_names <- famecon_df %>%
+    select(contains(var_name)) %>%
     colnames() %>%
-    str_subset("^fid\\d*$") %>%
+    str_subset(regex_pattern) %>%
     sort(decreasing=TRUE)
   
-  relevant_fid <- all_fids[1]
+  relevant_name <- all_names[1]
   
-  return (relevant_fid)
+  return (relevant_name)
 }
-
-#' Obtiene el nombre familysize relevante para el famecon. Normalmente es el que se corresponde
-#' con el año en el que está el dataset
-#' 
-#' @param famecon_df Un dataframe de famecon
-#' @returns nombre del familysize correcto
-get_relevant_familysize <- function(famecon_df) {
-  all_fam <- famecon_df %>%
-    select(contains("familysize")) %>%
-    colnames() %>%
-    str_subset("^familysize\\d*$") %>%
-    sort(decreasing=TRUE)
-  
-  relevant_fam <- all_fam[1]
-  
-  return (relevant_fam)
-}
-
 
 #' Obtiene un dataset de famecon y lo prepara para ser mezclado junto con otros
 #' famecons de otros años
@@ -82,15 +73,17 @@ get_relevant_familysize <- function(famecon_df) {
 #' )
 famecon_cleaner <- function(famecon_df, variables) {
 
+  # En primer lugar obtenemos nombres relevantes que pueden contener un sufijo
+  # numérico
+  relevant_fid        <- get_relevant_name(famecon_df, var_name = "fid")
+  relevant_familysize <- get_relevant_name(famecon_df, var_name = "familysize")
+  
   # Si hay una var llamada faminc_net, renombrarla a fincome1
   if(any(str_detect(names(famecon_df), "faminc_net"))){
 
     names(famecon_df) <- str_replace(names(famecon_df), "faminc_net", "fincome1")
     
   }
-  
-  # Obtener la variable correcta de family_size
-  relevant_familysize <- get_relevant_familysize(famecon_df)
   
   # Si no hay fincome1_per, la calcularemos
   if(!any(str_detect(names(famecon_df), "fincome1_per"))){
@@ -101,7 +94,6 @@ famecon_cleaner <- function(famecon_df, variables) {
       )
     
   }
-  
   
   # pce se ha de calcular en términos per capita también
   if(!any(str_detect(names(famecon_df), "pce_per"))){
@@ -127,10 +119,6 @@ famecon_cleaner <- function(famecon_df, variables) {
   # numérico.
   famecon_sub <- famecon_sub %>% 
     rename_with( ~str_remove(., "\\d+$"), .cols = matches("^provcd\\d+$"))
-  
-  # La variable fid* debe estar sin el sufijo del año
-  # Obtén fid del año presente
-  relevant_fid <- get_relevant_fid(famecon_sub)
   
   famecon_sub <- famecon_sub %>%
     rename(fid = relevant_fid)
@@ -190,7 +178,7 @@ famecon_cleaner <- function(famecon_df, variables) {
  #' 
  clasificar_familia <- function(df_famecon, df_famconf, variable_urban, variable_hukou) {
    
-   relevant_fid <- get_relevant_fid(df_famecon)
+   relevant_fid <- get_relevant_name(df_famecon, var_name = "fid")
    
    # Para el dataset de 2010, hacemos una excepción determinando la clasificación familiar
    if (variable_hukou == "tb601_a_p") {
