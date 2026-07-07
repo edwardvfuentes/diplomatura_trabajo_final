@@ -5,6 +5,7 @@ library(skimr)
 library(ggthemes)
 library(ggsci)
 library(envalysis)
+library(scales)
 
 source("./input/clean_datasets.R")
 
@@ -125,6 +126,52 @@ famecon_family_df %>%
 
 
 ## Figura 4: Distribución de gastos por tipo de household (año 2022)
+familia_cat_gasto_2022 <- famecon_family_df %>%
+  filter(year == 2022) %>%
+  group_by(tipo_familia) %>% 
+  summarise(
+    food  = sum(food),
+    daily = sum(daily),
+    dress = sum(dress),
+    eec   = sum(eec),
+    house = sum(house),
+    med   = sum(med),
+    other = sum(other),
+    trco  = sum(trco)
+  ) %>% 
+  pivot_longer(
+    cols = c("food", "dress", "house", "daily", "med", "trco", "eec", "other"),
+    names_to = "Variable",
+    values_to = "Valor"
+  ) %>%
+  mutate(tipo_familia = as.factor(tipo_familia)) %>% 
+  group_by(tipo_familia) %>% 
+  mutate(pct_gasto = Valor / sum(Valor))
+
+  familia_cat_gasto_2022 %>% 
+  ggplot(aes(x = Variable, y=pct_gasto)) +
+  geom_col( aes(fill = tipo_familia), position = "dodge") +
+  theme_publish() +
+  theme(
+    panel.grid.major.y = element_line(
+      color = "gray80", 
+      linewidth = 0.5,  
+      linetype = "solid"   
+    )
+  ) +
+  scale_y_continuous(
+    labels = scales::percent,
+    n.breaks = 4
+    ) +
+  labs(
+    y = "% Gasto total en la categoría",
+    x = "Categoría de gasto",
+    caption = expression(italic("Figura 4: Distribución de gastos según tipo de familia (2022). Elaboración propia con datos de CFPS"))
+  )
+
+
+
+
 famecon_family_df %>%
   filter(year == 2022) %>% 
   select(tipo_familia, food, dress, house, daily, med, trco, eec, other) %>% 
