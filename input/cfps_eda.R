@@ -68,7 +68,7 @@ datasummary_df(
     )
   ,
   fmt = 0,
-  title = "Tabla 3: Nº de registros por tipo de familia",
+  title = "Tabla 3: Ingresos y consumo por tipo de familia",
   notes = "Fuente: Elaboración propia en base a CFPS",
   output = "./output/household_type_summary.png"
 )
@@ -98,28 +98,56 @@ family_household_year %>%
   scale_x_continuous(breaks = unique(family_household_year$year)) +
   theme_minimal()
 
+
+## Figura 2: Distribución de la renta pc por provincias (2010-2022)
 famecon_family_df %>% 
-  group_by(year, tipo_familia) %>% 
-  summarise(
-    ingresos_medianos = median(fincome1_per),
-    consumo_mediano = median(pce)
-  ) %>% 
-  mutate(year = as.integer(year)) %>% 
-  ggplot(aes())
-
-
-
-
-famecon_family_df %>% 
+  filter(!es_outlier(fincome1_per)) %>% 
   ggplot(aes(x = fincome1_per)) +
   geom_histogram() +
   facet_wrap(~provcd) +
-  theme_publish() +
+  theme_minimal() +
   labs(
     x = "Renta neta per cápita",
-    caption = expression(italic("Figura 1: Distribución de renta per capita por provincias (2010-2022)"))
+    caption = expression(italic("Figura 2: Distribución de renta per capita por provincias (2010-2022). \n Se ha escogido un tamaño de 30 para el ancho de las barras y se han eliminado atípicos. Elaboración propia con datos de CFPS"))
     )
 
+## Figura 3: Distribución del consumo pc por provincias (2010-2022)
+famecon_family_df %>%
+  filter(!es_outlier(pce)) %>% 
+  ggplot(aes(x = pce)) +
+  geom_histogram() +
+  facet_wrap(~provcd) +
+  theme_minimal() +
+  labs(
+    x = "Consumo per cápita",
+    caption = expression(italic("Figura 3: Distribución del consumo per cápita por provincias (2010-2022). Se ha escogido  \n un tamaño de 30 para el ancho de las barras. Elaboración propia con datos de CFPS"))
+  )
+
+
+## Figura 4: Distribución de gastos por tipo de household (año 2022)
+famecon_family_df %>%
+  filter(year == 2022) %>% 
+  select(tipo_familia, food, dress, house, daily, med, trco, eec, other) %>% 
+  pivot_longer(
+    cols = c("food", "dress", "house", "daily", "med", "trco", "eec", "other"),
+    names_to = "Variable",
+    values_to = "Valor"
+  ) %>% 
+  ggplot(aes(x = Variable, y=Valor)) +
+  geom_col( aes(fill = tipo_familia), position = "dodge") +
+  theme_publish() +
+  theme(
+    panel.grid.major.y = element_line(
+      color = "gray80", 
+      linewidth = 0.5,  
+      linetype = "solid"   
+    )
+  ) +
+  labs(
+    y = "Renta neta per cápita",
+    x = "Categoría de gasto",
+    caption = expression(italic("Figura 4: Distribución de gastos según tipo de familia (2022). Elaboración propia con datos de CFPS"))
+  )
 
   
 

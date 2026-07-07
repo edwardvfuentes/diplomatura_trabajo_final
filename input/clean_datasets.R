@@ -65,8 +65,16 @@ famecon_family_df <- famecon_family_df %>%
   ungroup()
 
 # Eliminamos de las variables numéricas los outliers
-famecon_family_df <- famecon_family_df %>%
-  filter(!es_outlier(fincome1_per))
+ # famecon_family_df <- famecon_family_df %>%
+ #   filter(!es_outlier(fincome1_per))
+
+# famecon_family_df <- famecon_family_df %>%
+#   filter(if_all(where(is.numeric), ~ !es_outlier(.x)))
+# 
+
+# famecon_family_df %>%
+#  mutate(across(where(is.numeric), ~ log(.x + 1)))
+
 
 # Añadimos una variable dummy, para reflejar la reforma del hukou en 2014
 famecon_family_df <- famecon_family_df %>% 
