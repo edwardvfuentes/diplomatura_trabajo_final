@@ -16,9 +16,7 @@ for (famecon_df in str_subset(ls(), "famecon\\d{4}")) {
 famecon_map <- map_dfr(
   famecon_list,
   function(x) famecon_cleaner(x, variables = c(
-    "fincome1",
     "fincome1_per",
-    "pce",
     "pce_per",
     "food",
     "dress",
@@ -29,8 +27,6 @@ famecon_map <- map_dfr(
     "eec",
     "other",
     "eptran",
-    "epwelf",
-    "mortage",
     "expense",
     "tipo_familia"
   )
@@ -50,7 +46,7 @@ famecon_family_df <- famecon_map %>%
 
 # Eliminamos las siguientes provincias por falta de datos o muy pocos datos:
 # Hainan, Tibet, Qinghai, Ningxia, Mongolia Interior y Xinjiang
-famecon_family_df <- famecon_family_df %>% filter(provcd %notin% c(46, 54, 63, 64, 65)) 
+famecon_family_df <- famecon_family_df %>% filter(provcd %notin% c(15, 46, 54, 63, 64, 65)) 
 
 # Eliminar missing values de las provincias (esto es, códigos negativos o
 # iguales a 99, y los NAs que se encuentran en algunos datos)
@@ -72,7 +68,7 @@ famecon_family_df <- famecon_family_df %>%
 
 # Eliminamos de las variables numéricas los outliers
 famecon_family_df <- famecon_family_df %>%
-  filter(!es_outlier(fincome1))
+  filter(!es_outlier(fincome1_per))
 
 # Añadimos una variable dummy, para reflejar la reforma del hukou en 2014
 famecon_family_df <- famecon_family_df %>% 
