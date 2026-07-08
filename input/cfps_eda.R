@@ -59,7 +59,7 @@ datasummary_df(
   fmt = 0,
   title = "Tabla 5: Transiciones de estados de familia de 2010 a 2012",
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/transition_1012_table.png"
+  output = "./output/Tablas/transition_1012_table.png"
 )
 
 
@@ -77,7 +77,7 @@ datasummary_df(
   fmt = 0,
   title = "Tabla 6: Transiciones de estados de familia de 2014 a 2016",
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/transition_1416_table.png"
+  output = "./output/Tablas/transition_1416_table.png"
 )
 
 family_transition_2022_table <- family_transition_full %>% 
@@ -94,7 +94,7 @@ datasummary_df(
   fmt = 0,
   title = "Tabla 7: Transiciones de estados de familia de 2020 a 2022",
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/transition_2022_table.png"
+  output = "./output/Tablas/transition_2022_table.png"
 )
 
 
@@ -114,7 +114,7 @@ datasummary_df(
   fmt = 0,
   title = "Tabla 1: Registros por provincia y año después de las transformaciones",
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/provcd_year_summary.png"
+  output = "./output/Tablas/provcd_year_summary.png"
 )
 
 ## Tabla 2: Resumen estadístico de las variables
@@ -141,7 +141,7 @@ datasummary_df(
   fmt = 0,
   title = "Tabla 2: Resumen estadístico de las variables",
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/variable_summary.png"
+  output = "./output/Tablas/variable_summary.png"
 )
 
 ## Tabla 3: Registros por tipo de familia
@@ -159,7 +159,7 @@ datasummary_df(
   fmt = 0,
   title = "Tabla 3: Ingresos y consumo por tipo de familia",
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/household_type_summary.png"
+  output = "./output/Tablas/household_type_summary.png"
 )
 
 # =========

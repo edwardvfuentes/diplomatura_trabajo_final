@@ -85,6 +85,13 @@ famecon_cleaner <- function(famecon_df, variables) {
     
   }
   
+  # Si hay una var llamada resivalue_new, renombrar a resivalue
+  if(any(str_detect(names(famecon_df), "resivalue_new"))){
+    
+    names(famecon_df) <- str_replace(names(famecon_df), "resivalue_new", "resivalue")
+    
+  }
+  
   # Si no hay fincome1_per, la calcularemos
   if(!any(str_detect(names(famecon_df), "fincome1_per"))){
     

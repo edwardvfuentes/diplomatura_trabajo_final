@@ -27,6 +27,7 @@ famecon_map <- map_dfr(
     "trco",
     "eec",
     "other",
+    "resivalue",
     "tipo_familia"
   )
   ),
@@ -82,10 +83,6 @@ famecon_family_df <- famecon_family_df %>%
   mutate(
     hukou_reform = as.logical(ifelse(as.numeric(year) >= 2014, 1, 0))
     )
-
-# Para determinar el Rural como categoría base en tipo_familia
-famecon_family_df$tipo_familia <- factor(famecon_family_df$tipo_familia, levels = c("Rural", "Urbano", "Migrante (Rural a Urbano)", "Migrante (Urbano a Rural)"))
-
 
 # Elaboraremos otra versión del dataframe con promedios para todas las variables
 # según año y provincia

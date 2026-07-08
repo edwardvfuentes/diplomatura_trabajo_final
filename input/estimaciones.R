@@ -6,12 +6,15 @@ library(kableExtra)
 
 source("./input/clean_datasets.R")
 
+# Para determinar el Rural como categoría base en tipo_familia
+famecon_family_df$tipo_familia <- factor(famecon_family_df$tipo_familia, levels = c("Rural", "Urbano", "Migrante (Rural a Urbano)", "Migrante (Urbano a Rural)"))
+
 # Modelos OLS
 # Consumo ~ Ingresos + Activos
 
-ols_estandar_1 <- lm(log(pce + 1) ~ log(fincome1_per + 1), data=famecon_family_df)
-ols_estandar_2 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + tipo_familia, data=famecon_family_df)
-ols_estandar_3 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_estandar_1 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1), data=famecon_family_df)
+ols_estandar_2 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia, data=famecon_family_df)
+ols_estandar_3 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
 
 
 lista_estandar_models <- list(
@@ -26,7 +29,7 @@ modelsummary(
   title = "MCO para el logaritmo de consumo total",
   gof_map = c("r.squared", "adj.r.squared", "nobs", "rmse"),
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/resumen_ols_consumo.png"
+  output = "./output/Tablas/resumen_ols_consumo.png"
 )
 
 # Consumo ~ Ingresos + Activos 2010-2014 frente a 2016-2022
@@ -46,18 +49,18 @@ modelsummary(
   title = "MCO para el logaritmo de consumo: Antes y después de la reforma de 2014",
   gof_map = c("r.squared", "adj.r.squared", "nobs", "rmse"),
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/resumen_ols_consumo_reforma.png"
+  output = "./output/Tablas/resumen_ols_consumo_reforma.png"
 )
 
 
 # Modelos para categoría de gasto general
-ols_food  <- lm(log(food + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df )
-ols_dress <- lm(log(dress + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
-ols_house <- lm(log(house + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
-ols_daily <- lm(log(daily + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
-ols_med   <- lm(log(med + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
-ols_trco  <- lm(log(trco + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
-ols_eec   <- lm(log(eec + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_food  <- lm(log(food + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) +tipo_familia + hukou_reform, data=famecon_family_df )
+ols_dress <- lm(log(dress + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_house <- lm(log(house + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_daily <- lm(log(daily + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_med   <- lm(log(med + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_trco  <- lm(log(trco + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_eec   <- lm(log(eec + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
 
 lista_categorias_models <- list(
   "Comida" = ols_food,
@@ -75,17 +78,17 @@ modelsummary(
   title = "MCO para el logaritmo de categorías de consumo",
   gof_map = c("r.squared", "adj.r.squared", "nobs", "rmse"),
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/resumen_ols_categorías.png"
+  output = "./output/Tablas/resumen_ols_categorías.png"
 )
 
 # Modelos para categorías de gasto post-reforma hukou
-ols_post_food  <- lm(log(food + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>%filter(year %in% c(2016, 2018, 2020, 2022)))
-ols_post_dress <- lm(log(dress + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
-ols_post_house <- lm(log(house + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
-ols_post_daily <- lm(log(daily + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
-ols_post_med   <- lm(log(med + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
-ols_post_trco  <- lm(log(trco + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>%filter(year %in% c(2016, 2018, 2020, 2022)))
-ols_post_eec   <- lm(log(eec + 1) ~ log(fincome1_per + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
+ols_post_food  <- lm(log(food + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>%filter(year %in% c(2016, 2018, 2020, 2022)))
+ols_post_dress <- lm(log(dress + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
+ols_post_house <- lm(log(house + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
+ols_post_daily <- lm(log(daily + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
+ols_post_med   <- lm(log(med + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
+ols_post_trco  <- lm(log(trco + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>%filter(year %in% c(2016, 2018, 2020, 2022)))
+ols_post_eec   <- lm(log(eec + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
 
 lista_categorias_post_models <- list(
   "Comida" = ols_post_food,
@@ -103,7 +106,7 @@ modelsummary(
   title = "MCO para el logaritmo de categorías de consumo",
   gof_map = c("r.squared", "adj.r.squared", "nobs", "rmse"),
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/resumen_ols_categorías.png"
+  output = "./output/Tablas/resumen_ols_categorías.png"
 )
 
 
@@ -135,7 +138,7 @@ modelsummary(
   title = "MCO de Panel con efectos fijos para el logaritmo de consumo total",
   gof_map = c("r.squared", "adj.r.squared", "nobs", "rmse"),
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/resumen_plm_consumo.png"
+  output = "./output/Tablas/resumen_plm_consumo.png"
 )
 
 
@@ -153,7 +156,7 @@ modelsummary(
   title = "Efectos Fijos de MCO de Panel para log(consumo)",
   gof_map = c("r.squared", "adj.r.squared", "nobs", "rmse"),
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/resumen_plm_consumo.png"
+  output = "./output/Tablas/resumen_plm_consumo.png"
 )
 
 # Si quieres extraer los efectos fijos:
