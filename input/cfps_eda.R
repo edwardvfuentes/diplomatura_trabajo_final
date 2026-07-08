@@ -36,9 +36,9 @@ family_transition_full <- famecon_family_df %>%
   group_by(fid) %>% 
   mutate(
     estado_actual = tipo_familia,
-    estado_siguiente = lead(tipo_familia),
+    estado_siguiente = dplyr::lead(tipo_familia),
     anio_actual = year,
-    anio_siguiente = lead(year)
+    anio_siguiente = dplyr::lead(year)
   ) %>% 
   ungroup() %>% 
   filter(!is.na(estado_siguiente)) %>% 
@@ -57,7 +57,6 @@ family_transition_1012_table <- family_transition_full %>%
 datasummary_df(
   family_transition_1012_table,
   fmt = 0,
-  title = "Tabla 5: Transiciones de estados de familia de 2010 a 2012",
   notes = "Fuente: Elaboración propia en base a CFPS",
   output = "./output/Tablas/transition_1012_table.png"
 )
@@ -75,7 +74,6 @@ family_transition_1416_table <- family_transition_full %>%
 datasummary_df(
   family_transition_1416_table,
   fmt = 0,
-  title = "Tabla 6: Transiciones de estados de familia de 2014 a 2016",
   notes = "Fuente: Elaboración propia en base a CFPS",
   output = "./output/Tablas/transition_1416_table.png"
 )
@@ -92,13 +90,30 @@ family_transition_2022_table <- family_transition_full %>%
 datasummary_df(
   family_transition_2022_table,
   fmt = 0,
-  title = "Tabla 7: Transiciones de estados de familia de 2020 a 2022",
   notes = "Fuente: Elaboración propia en base a CFPS",
   output = "./output/Tablas/transition_2022_table.png"
 )
 
 
 # == Tablas estadísticas == 
+
+## Tabla 0: Muestras por años
+year_summary <- famecon_family_df %>% 
+  group_by( year) %>% 
+  summarise(Registros = n()) %>% 
+  rename(
+    "Año" = year
+  )
+
+datasummary_df(
+  year_summary,
+  fmt = 0,
+ # title = "Registros por año después de las transformaciones",
+  notes = "Fuente: Elaboración propia en base a CFPS",
+  output = "./output/Tablas/year_summary.png"
+)
+
+
 
 ## Tabla 1: Muestras por provincias y por años antes de las transformaciones
 provcd_year_summary <- famecon_family_df %>% 
@@ -139,8 +154,8 @@ skimmed_family_table <- skimmed_family_df %>%
 datasummary_df(
   skimmed_family_table,
   fmt = 0,
-  title = "Tabla 2: Resumen estadístico de las variables",
-  notes = "Fuente: Elaboración propia en base a CFPS",
+  # title = "Tabla 2: Resumen estadístico de las variables",
+  notes = "Fuente: Elaboración propia en base a CFPS. Todas las variable están representadas en per cápita",
   output = "./output/Tablas/variable_summary.png"
 )
 
@@ -154,10 +169,10 @@ datasummary_df(
       "Ingresos Medianos" = median(fincome1_per),
       "Consumo Medio" = mean(pce),
       "Consumo Mediano" = median(fincome1_per)
-    )
+    ) %>% rename("Estado de familia" = tipo_familia)
   ,
   fmt = 0,
-  title = "Tabla 3: Ingresos y consumo por tipo de familia",
+  # title = "Tabla 3: Ingresos y consumo por tipo de familia",
   notes = "Fuente: Elaboración propia en base a CFPS",
   output = "./output/Tablas/household_type_summary.png"
 )
@@ -168,50 +183,85 @@ datasummary_df(
 family_household_year <- famecon_family_df %>% 
   group_by(year, tipo_familia) %>% 
   summarise(
-    ingreso_medianos = median(fincome1_per),
+    ingreso_mediano = median(fincome1_per),
     consumo_mediano = median(pce)
   ) %>% 
   mutate(year = as.integer(year))
+(
+  plot1 <- family_household_year %>%
+    pivot_longer(
+      cols = c("ingreso_mediano", "consumo_mediano"),
+      names_to = "Variable", values_to = "Valor"
+      ) %>% 
+    ggplot(
+      aes(x = year, y = Valor, col = Variable)
+      ) + 
+    geom_line(linewidth = 1.5) +
+    geom_vline(xintercept = 2014, linetype = 2) +
+    facet_wrap(.~tipo_familia) +
+    scale_x_continuous(breaks = unique(family_household_year$year)) +
+    labs(x = "Año", y = "Yuanes", caption = "Fuente: Elaboración propia con datos de CFPS.") +
+    theme_minimal()
+)
 
-family_household_year %>%
-  pivot_longer(
-    cols = c("ingreso_medianos", "consumo_mediano"),
-    names_to = "Variable", values_to = "Valor"
-    ) %>% 
-  ggplot(
-    aes(x = year, y = Valor, col = Variable)
-    ) + 
-  geom_line(linewidth = 1.5) +
-  geom_vline(xintercept = 2014, linetype = 2) +
-  facet_wrap(.~tipo_familia) +
-  scale_x_continuous(breaks = unique(family_household_year$year)) +
-  theme_minimal()
-
+ggsave(
+  filename = "./output/Graficas/evolucion_ingresos_consumo_mediano_año_familia.png",  # El nombre del archivo. La extensión define el formato.
+  plot = plot1,            # El objeto de la gráfica que quieres guardar.
+  width = 8,                    # Ancho de la imagen.
+  height = 6,                   # Alto de la imagen.
+  units = "in",                 # Unidades para width y height ("in", "cm", "mm", "px").
+  dpi = 300                     # Resolución en puntos por pulgada (ideal para impresión).
+)
 
 ## Figura 2: Distribución de la renta pc por provincias (2010-2022)
-famecon_family_df %>% 
-  filter(!es_outlier(fincome1_per)) %>% 
-  ggplot(aes(x = fincome1_per)) +
-  geom_histogram() +
-  facet_wrap(~provcd) +
-  theme_minimal() +
-  labs(
-    x = "Renta neta per cápita",
-    caption = expression(italic("Figura 2: Distribución de renta per capita por provincias (2010-2022). \n Se ha escogido un tamaño de 30 para el ancho de las barras y se han eliminado atípicos. Elaboración propia con datos de CFPS"))
-    )
+(
+  plot2 <- famecon_family_df %>% 
+    filter(!es_outlier(fincome1_per)) %>% 
+    ggplot(aes(x = fincome1_per)) +
+    geom_histogram() +
+    facet_wrap(~provcd) +
+    theme_minimal() +
+    labs(
+      x = "Renta neta per cápita",
+      caption = expression(italic("Fuente: Elaboración propia con datos de CFPS. Se ha escogido un tamaño de 30 para el ancho de las barras y se han eliminado atípicos."))
+      )
+)
+
+ggsave(
+  filename = "./output/Graficas/distribucion_rpc_provincias_2010_2022.png",  # El nombre del archivo. La extensión define el formato.
+  plot = plot2,            # El objeto de la gráfica que quieres guardar.
+  width = 8,                    # Ancho de la imagen.
+  height = 6,                   # Alto de la imagen.
+  units = "in",                 # Unidades para width y height ("in", "cm", "mm", "px").
+  dpi = 300                     # Resolución en puntos por pulgada (ideal para impresión).
+)
+
+# Distribución de renta per capita por provincias (2010-2022). Se ha escogido un tamaño de 30 para el ancho de las barras y se han eliminado atípicos.
 
 ## Figura 3: Distribución del consumo pc por provincias (2010-2022)
-famecon_family_df %>%
-  filter(!es_outlier(pce)) %>% 
-  ggplot(aes(x = pce)) +
-  geom_histogram() +
-  facet_wrap(~provcd) +
-  theme_minimal() +
-  labs(
-    x = "Consumo per cápita",
-    caption = expression(italic("Figura 3: Distribución del consumo per cápita por provincias (2010-2022). Se ha escogido  \n un tamaño de 30 para el ancho de las barras. Elaboración propia con datos de CFPS"))
-  )
+(
+  plot3 <- famecon_family_df %>%
+    filter(!es_outlier(pce)) %>% 
+    ggplot(aes(x = pce)) +
+    geom_histogram() +
+    facet_wrap(~provcd) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45)) +
+    labs(
+      x = "Consumo per cápita",
+      caption = expression(italic("Fuente: Elaboración propia con datos de CFPS. Se ha escogido un tamaño de 30 para el ancho de las barras y se han eliminado atípicos."))
+    )
+)
 
+# Figura 3: Distribución del consumo per cápita por provincias (2010-2022).
+ggsave(
+  filename = "./output/Graficas/distribucion_consumo_provincias_2010_2022.png",  # El nombre del archivo. La extensión define el formato.
+  plot = plot3,            # El objeto de la gráfica que quieres guardar.
+  width = 8,                    # Ancho de la imagen.
+  height = 6,                   # Alto de la imagen.
+  units = "in",                 # Unidades para width y height ("in", "cm", "mm", "px").
+  dpi = 300                     # Resolución en puntos por pulgada (ideal para impresión).
+)
 
 ## Figura 4: Distribución de gastos por tipo de household (año 2022)
 familia_cat_gasto_2022 <- famecon_family_df %>%
@@ -236,9 +286,16 @@ familia_cat_gasto_2022 <- famecon_family_df %>%
   group_by(tipo_familia) %>% 
   mutate(pct_gasto = Valor / sum(Valor))
 
-  familia_cat_gasto_2022 %>% 
+
+(
+  plot4 <- familia_cat_gasto_2022 %>% 
+  mutate(Variable = recode(Variable, !!!dict)) %>% 
   ggplot(aes(x = Variable, y=pct_gasto)) +
   geom_col( aes(fill = tipo_familia), position = "dodge", width = 0.5) +
+  scale_x_discrete(
+    labels = function(x) str_wrap(x, width = 10)
+  ) +
+  coord_flip() +
   theme_publish() +
   theme(
     panel.grid.major.y = element_line(
@@ -255,37 +312,20 @@ familia_cat_gasto_2022 <- famecon_family_df %>%
     y = "% Gasto total en la categoría",
     x = "Categoría de gasto",
     fill = "Tipo familia",
-    caption = expression(italic("Figura 4: Distribución de gastos según tipo de familia (2022). Elaboración propia con datos de CFPS"))
+    caption = expression(italic("Fuente: Elaboración propia con datos de CFPS"))
   )
+)
+# Distribución de gastos según tipo de familia (2022).
+  
+ggsave(
+  filename = "./output/Graficas/distribucion_gastos_tipo_familia_2022.png",  # El nombre del archivo. La extensión define el formato.
+  plot = plot4,            # El objeto de la gráfica que quieres guardar.
+  width = 8,                    # Ancho de la imagen.
+  height = 6,                   # Alto de la imagen.
+  units = "in",                 # Unidades para width y height ("in", "cm", "mm", "px").
+  dpi = 300                     # Resolución en puntos por pulgada (ideal para impresión).
+)
 
-
-
-
-famecon_family_df %>%
-  filter(year == 2022) %>% 
-  select(tipo_familia, food, dress, house, daily, med, trco, eec, other) %>% 
-  pivot_longer(
-    cols = c("food", "dress", "house", "daily", "med", "trco", "eec", "other"),
-    names_to = "Variable",
-    values_to = "Valor"
-  ) %>% 
-  mutate(Variable=recode(Variable, !!!dict, .default="Otro")) %>% 
-  ggplot(aes(x = Variable, y=Valor)) +
-  geom_col( aes(fill = tipo_familia), position = "dodge") +
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
-  theme_publish() +
-  theme(
-    panel.grid.major.y = element_line(
-      color = "gray80", 
-      linewidth = 0.5,  
-      linetype = "solid"   
-    )
-  ) +
-  labs(
-    y = "Renta neta per cápita",
-    x = "Categoría de gasto",
-    caption = expression(italic("Figura 4: Distribución de gastos según tipo de familia (2022). Elaboración propia con datos de CFPS"))
-  )
 
   
 

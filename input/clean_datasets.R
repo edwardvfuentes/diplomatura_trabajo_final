@@ -18,7 +18,7 @@ famecon_map <- map_dfr(
   function(x) famecon_cleaner(x, variables = c(
     "fincome1_per",
     "pce",
-    "total_asset",
+    "resivalue",
     "food",
     "dress",
     "house",
@@ -27,7 +27,6 @@ famecon_map <- map_dfr(
     "trco",
     "eec",
     "other",
-    "resivalue",
     "tipo_familia"
   )
   ),
@@ -83,6 +82,16 @@ famecon_family_df <- famecon_family_df %>%
   mutate(
     hukou_reform = as.logical(ifelse(as.numeric(year) >= 2014, 1, 0))
     )
+
+# Clasificamos familias según categorías de renta
+famecon_family_df <- famecon_family_df %>% 
+  mutate(
+    categoria_renta = cut(fincome1_per,
+                          breaks = quantile(fincome1_per, probs = c(0, 1/3, 2/3, 1)),
+                          labels = c("Baja", "Media", "Alta"),
+                          include.lowest = TRUE)
+  )
+
 
 # Elaboraremos otra versión del dataframe con promedios para todas las variables
 # según año y provincia
