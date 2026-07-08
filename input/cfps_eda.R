@@ -28,8 +28,8 @@ famecon_family_df %>%
 
 
 # Conteos de transición de un tipo_famili a otro entre 2010 y 2012
-famecon_family_df %>%
-  filter(year %in% c(2010, 2012)) %>%
+family_transition_full <- famecon_family_df %>%
+  # filter(year %in% c(2010, 2012)) %>%
   mutate(year = as.integer(year)) %>% 
   select(fid, year, tipo_familia) %>% 
   arrange(fid, year) %>% 
@@ -45,9 +45,57 @@ famecon_family_df %>%
   mutate(periodo = paste0(anio_actual, "/", anio_siguiente)) %>% 
   count(periodo, estado_actual, estado_siguiente)
 
+family_transition_1012_table <- family_transition_full %>% 
+  filter(periodo == "2010/2012") %>% 
+  pivot_wider(
+    id_cols = estado_actual,
+    names_from = estado_siguiente,
+    values_from = n,
+    values_fill = 0
+  ) %>% rename('Estado Familiar'=estado_actual)
+
+datasummary_df(
+  family_transition_1012_table,
+  fmt = 0,
+  title = "Tabla 5: Transiciones de estados de familia de 2010 a 2012",
+  notes = "Fuente: Elaboración propia en base a CFPS",
+  output = "./output/transition_1012_table.png"
+)
 
 
+family_transition_1416_table <- family_transition_full %>% 
+  filter(periodo == "2014/2016") %>% 
+  pivot_wider(
+    id_cols = estado_actual,
+    names_from = estado_siguiente,
+    values_from = n,
+    values_fill = 0
+  ) %>% rename('Estado Familiar'=estado_actual)
 
+datasummary_df(
+  family_transition_1416_table,
+  fmt = 0,
+  title = "Tabla 6: Transiciones de estados de familia de 2014 a 2016",
+  notes = "Fuente: Elaboración propia en base a CFPS",
+  output = "./output/transition_1416_table.png"
+)
+
+family_transition_2022_table <- family_transition_full %>% 
+  filter(periodo == "2020/2022") %>% 
+  pivot_wider(
+    id_cols = estado_actual,
+    names_from = estado_siguiente,
+    values_from = n,
+    values_fill = 0
+  ) %>% rename('Estado Familiar'=estado_actual)
+
+datasummary_df(
+  family_transition_2022_table,
+  fmt = 0,
+  title = "Tabla 7: Transiciones de estados de familia de 2020 a 2022",
+  notes = "Fuente: Elaboración propia en base a CFPS",
+  output = "./output/transition_2022_table.png"
+)
 
 
 # == Tablas estadísticas == 

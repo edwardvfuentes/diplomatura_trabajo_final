@@ -18,6 +18,7 @@ famecon_map <- map_dfr(
   function(x) famecon_cleaner(x, variables = c(
     "fincome1_per",
     "pce",
+    "total_asset",
     "food",
     "dress",
     "house",
@@ -82,13 +83,20 @@ famecon_family_df <- famecon_family_df %>%
     hukou_reform = as.logical(ifelse(as.numeric(year) >= 2014, 1, 0))
     )
 
+# Para determinar el Rural como categoría base en tipo_familia
+famecon_family_df$tipo_familia <- factor(famecon_family_df$tipo_familia, levels = c("Rural", "Urbano", "Migrante (Rural a Urbano)", "Migrante (Urbano a Rural)"))
+
 
 # Elaboraremos otra versión del dataframe con promedios para todas las variables
 # según año y provincia
 famecon_grouped_df <- famecon_family_df %>%
   group_by(year, provcd) %>% 
   summarise(
-    across(where(is.numeric), \(x) mean(x, na.rm = TRUE))
-  ) %>% ungroup()
+    across(where(is.numeric), \(x) median(x, na.rm = TRUE))
+  ) %>%
+  ungroup() %>% 
+  mutate(
+    hukou_reform = as.logical(ifelse(as.numeric(year) >= 2014, 1, 0))
+  )
 
   

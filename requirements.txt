@@ -7,3 +7,5 @@ skimr
 ggthemes
 gsci
 envalysis
+fixest
+kableExtra

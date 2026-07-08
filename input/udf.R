@@ -5,7 +5,6 @@ library(stringr)
 library(rlang)
 
 
-
 #' Obtiene el nombre de una var relevante para el famecon. Normalmente es el que se corresponde
 #' con el año en el que está el dataset. Pensado para variables que tienen nombres diferentes de
 #' una muestra a otra (ej provcd frente a provcd14)
@@ -29,6 +28,7 @@ get_relevant_name <- function(famecon_df, var_name) {
   
   return (relevant_name)
 }
+
 
 #' Obtiene un dataset de famecon y lo prepara para ser mezclado junto con otros
 #' famecons de otros años
@@ -110,7 +110,7 @@ famecon_cleaner <- function(famecon_df, variables) {
   famecon_df <- famecon_df %>% 
     mutate(
       across(
-        c("pce", "food", "dress", "house", "daily", "med", "trco"),
+        c("pce", "food", "dress", "house", "daily", "med", "trco", "total_asset"),
         ~ . / !!sym(relevant_familysize)
       )
     )
