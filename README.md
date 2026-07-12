@@ -15,7 +15,7 @@ El proyecto cuenta con una serie de carpetas y scripts, que detallamos a continu
 - data_source: Carpeta el conjunto de datos descargado y su documentación relacionad, en este caso del CFPS
 - input: Carpeta con los scripts de R necesarios. Cada sript tiene una finalidad:
 
-  * load_source_data.R: Carga los datos en bruto en el entorno de R.
+  * load_source_data.R: Carga los datos en bruto en el entorno de R. Nótese que en el repositorio remoto esta carpeta no se incluye por normas de uso de los datos de CFPS de parte de Peking University (para más información: https://cfpsdata.pku.edu.cn/#/home).
   * clean_datasets.R: A partir de los datos en bruto, realiza una serie de limpiezas para tener los dos dataframes completos del proyecto, que son __famecon_family_df__ y __famecon_grouped_df__. El primero contiene los datos consolidados a nivel familia de todas las muestras, desde 2010 hasta 2022, mientras que el segundo se compone de promedios por año y provincia, pensado para las estimaciones de panel.
   * udf.R: Fichero con funciones de usuario definidas que han sido utilizadas en el proyecto.
   * household_type.R: Script que se encarga de clasificar a las familias según rural, urbano o migrante, mediante la metodología que detallamos en el trabajo.
