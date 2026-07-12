@@ -114,23 +114,40 @@ datasummary_df(
 )
 
 
-
 ## Tabla 1: Muestras por provincias y por años antes de las transformaciones
-provcd_year_summary <- famecon_family_df %>% 
-  group_by(provcd, year) %>% 
+provcd_summary <- famecon_family_df %>% 
+  group_by(provcd) %>% 
   summarise(Registros = n()) %>% 
   rename(
-    "Año" = year,
     "Provincia" = provcd
   )
 
 datasummary_df(
-  provcd_year_summary %>% pivot_wider(names_from = "Año", values_from = Registros),
+  provcd_summary %>% arrange(desc(Registros)),
   fmt = 0,
-  title = "Tabla 1: Registros por provincia y año después de las transformaciones",
+  # title = "Tabla 1: Registros por provincia después de las transformaciones",
   notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/Tablas/provcd_year_summary.png"
+  output = "./output/Tablas/provcd_summary.png"
 )
+
+## Registros por provincia después de las transformaciones
+
+## Tabla 1: Muestras por provincias y por años antes de las transformaciones
+# provcd_year_summary <- famecon_family_df %>% 
+#   group_by(provcd, year) %>% 
+#   summarise(Registros = n()) %>% 
+#   rename(
+#     "Año" = year,
+#     "Provincia" = provcd
+#   )
+# 
+# datasummary_df(
+#   provcd_year_summary %>% pivot_wider(names_from = "Año", values_from = Registros),
+#   fmt = 0,
+#   title = "Tabla 1: Registros por provincia y año después de las transformaciones",
+#   notes = "Fuente: Elaboración propia en base a CFPS",
+#   output = "./output/Tablas/provcd_year_summary.png"
+# )
 
 ## Tabla 2: Resumen estadístico de las variables
 skimmed_family_df <- famecon_family_df %>%

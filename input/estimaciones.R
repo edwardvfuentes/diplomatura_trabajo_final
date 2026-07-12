@@ -14,13 +14,15 @@ famecon_family_df$tipo_familia <- factor(famecon_family_df$tipo_familia, levels 
 
 ols_estandar_1 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1), data=famecon_family_df)
 ols_estandar_2 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia, data=famecon_family_df)
-ols_estandar_3 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + hukou_reform, data=famecon_family_df)
+ols_estandar_3 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + categoria_renta, data=famecon_family_df)
+ols_estandar_4 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + log(resivalue + 1) + tipo_familia + categoria_renta + hukou_reform, data=famecon_family_df)
 
 
 lista_estandar_models <- list(
   "Modelo 1" = ols_estandar_1,
   "Modelo 2" = ols_estandar_2,
-  "Modelo 3" = ols_estandar_3
+  "Modelo 3" = ols_estandar_3,
+  "Modelo 4" = ols_estandar_4
 )
 
 modelsummary(
@@ -35,9 +37,9 @@ modelsummary(
 # Mínimos Cuadrados Ordinarios para el logaritmo de consumo total
 
 # Consumo ~ Ingresos + Activos 2010-2014 frente a 2016-2022
-ols_year_1 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + tipo_familia,
+ols_year_1 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + tipo_familia + categoria_renta,
                  data=famecon_family_df %>% filter(year %in% c(2010, 2012, 2014)))
-ols_year_2 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + tipo_familia,
+ols_year_2 <- lm(log(pce + 1) ~ log(fincome1_per + 1) + tipo_familia + categoria_renta,
                  data=famecon_family_df %>% filter(year %in% c(2016, 2018, 2020, 2022)))
 
 lista_year_models <- list(
