@@ -6,8 +6,26 @@ Este repositorio pretende guardar de manera abierta todo el código relacionado 
 
 ## Metodología
 
-Se pretende estimar una serie de modelos de panel econométricos para medir la posible influencia de la reforma del Hukou de 2014 sobre el consumo y otras variables de las familias chinas.
+Se pretende estimar una serie de modelos econométricos para medir la posible influencia de la reforma del Hukou de 2014 sobre el consumo y otras variables de las familias chinas.
+
+## Estructura
+
+El proyecto cuenta con una serie de carpetas y scripts, que detallamos a continuación:
+
+- data_source: Carpeta el conjunto de datos descargado y su documentación relacionad, en este caso del CFPS
+- input: Carpeta con los scripts de R necesarios. Cada sript tiene una finalidad:
+
+  * load_source_data.R: Carga los datos en bruto en el entorno de R.
+  * clean_datasets.R: A partir de los datos en bruto, realiza una serie de limpiezas para tener los dos dataframes completos del proyecto, que son __famecon_family_df__ y __famecon_grouped_df__. El primero contiene los datos consolidados a nivel familia de todas las muestras, desde 2010 hasta 2022, mientras que el segundo se compone de promedios por año y provincia, pensado para las estimaciones de panel.
+  * udf.R: Fichero con funciones de usuario definidas que han sido utilizadas en el proyecto.
+  * household_type.R: Script que se encarga de clasificar a las familias según rural, urbano o migrante, mediante la metodología que detallamos en el trabajo.
+  * cfps_eda.R: Script exploratorio de datos. Aquí se generan las tablas y las gráficas del trabajo.
+  * estimaciones.R: Donde se estiman los modelos econométricos propuestos en el trabajo.
+  
+## Cómo usar
+
+Si se desea obtener los conjuntos de datos ya listos para su exploración o cálculo de modelos econométricos, basta con ejecutar source("./input/clean_datasets") desde el directorio de trabajo.
 
 ## Datos
 
-Los datos provienen del *China Family Panel Studies*, y no se pueden publicar sin permiso de la institución, por lo que este repositorio no subirá los datos de manera pública.
+Los datos provienen del *China Family Panel Studies* (CFPS), y no se pueden publicar sin permiso de la institución, por lo que este repositorio no subirá los datos de manera pública.
