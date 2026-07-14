@@ -149,33 +149,41 @@ plm_fe_1 <- fixef(plm_estandar_1, type = "dmean")
 plm_fe_2 <- fixef(plm_estandar_2, type = "dmean")
 
 
-tabla_fe <- data.frame(
-  id = names(plm_fe_1),
-  efecto_fijo = as.numeric(plm_fe_1)
-)
+plm_fe_1 %>%
+  summary() %>% 
+  kbl(
+    booktabs = TRUE,          # Líneas horizontales de alta calidad (estilo LaTeX)
+    format = "html",          # Cámbialo a "latex" si usas PDF
+    align = c("l", rep("r", 5))  # Primera columna izquierda, resto derecha
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),  # Solo para HTML (opcional)
+    full_width = FALSE,
+    font_size = 12,
+    latex_options = c("HOLD_position", "scale_down")  # Para PDF
+  ) %>%
+  footnote(
+    footnote_as_chunk = FALSE,
+    title_format = c("italic", "underline")
+  )
 
-tidy(plm_fe_1)
-
-modelsummary(tabla_fe)
-
-kable(tabla_fe,
-      digits = 3,
-      col.names = c("Unidad", "Efecto fijo"))
-
-
-lista_efectos_fijos <- list(
-  "Modelo 1" = plm_fe_1,
-  "Modelo 2" = plm_fe_2
-)
-
-datasummary_df(
-  tidy(plm_fe_1) %>% summary(),
-  stars = TRUE,
-  title = "Efectos Fijos de MCO de Panel para log(consumo)",
-  gof_map = c("r.squared", "adj.r.squared", "nobs", "rmse"),
-  notes = "Fuente: Elaboración propia en base a CFPS",
-  output = "./output/Tablas/resumen_plm_consumo.png"
-)
+plm_fe_2 %>%
+  summary() %>% 
+  kbl(
+    booktabs = TRUE,          # Líneas horizontales de alta calidad (estilo LaTeX)
+    format = "html",          # Cámbialo a "latex" si usas PDF
+    align = c("l", rep("r", 5))  # Primera columna izquierda, resto derecha
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),  # Solo para HTML (opcional)
+    full_width = FALSE,
+    font_size = 12,
+    latex_options = c("HOLD_position", "scale_down")  # Para PDF
+  ) %>%
+  footnote(
+    footnote_as_chunk = FALSE,
+    title_format = c("italic", "underline")
+  )
 
 
 
