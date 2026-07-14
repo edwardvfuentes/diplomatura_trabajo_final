@@ -21,6 +21,10 @@ El proyecto cuenta con una serie de carpetas y scripts, que detallamos a continu
   * household_type.R: Script que se encarga de clasificar a las familias según rural, urbano o migrante, mediante la metodología que detallamos en el trabajo.
   * cfps_eda.R: Script exploratorio de datos. Aquí se generan las tablas y las gráficas del trabajo.
   * estimaciones.R: Donde se estiman los modelos econométricos propuestos en el trabajo.
+
+## Instalación
+
+Para ejecutar los scripts, se necesitan los paquetes indicados en el fichero _requirements.txt_. Se pueden instalar mediante el comando install.packages(), en donde el argumento puede ser un vector de caracteres con el nombre de cada paquete.
   
 ## Cómo usar
 
